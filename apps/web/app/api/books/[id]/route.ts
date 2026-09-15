@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { FileBookStore } from "@openstory/core";
+import { FileBookStore } from "@openstory/core/server";
 
 export const runtime = "nodejs";
 const store = new FileBookStore(process.env.OPENSTORY_DATA_DIR ?? ".openstory/books");
