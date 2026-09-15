@@ -2,30 +2,26 @@
 
 ## Active Phase
 
-**Phase 00 — Foundation**
+**Phase 01 — Product Definition**
 
 ## Objective
 
-Turn the empty repository into a durable, AI-continuable project specification and then establish the first executable vertical slice.
+Turn the product vision into executable acceptance criteria and a child-friendly creation workflow without breaking the Phase 00 runnable baseline.
 
 ## Immediate Tasks
 
-- [ ] Write complete product specification.
-- [ ] Write architecture specification.
-- [ ] Define core domain model.
-- [ ] Define provider interfaces.
-- [ ] Select initial stack based on documented constraints.
-- [ ] Scaffold application/package structure.
-- [ ] Add lint/type/test baseline.
-- [ ] Implement minimal story-to-book-domain pipeline.
-- [ ] Render a basic page without requiring image generation.
-- [ ] Add first automated tests.
-- [ ] Update project status.
+- [ ] Define the primary creation flow from idea to book draft.
+- [ ] Define age-band behavior for 2–3, 4–5, 6–8, and 9–12.
+- [ ] Define Persian RTL and English LTR acceptance criteria.
+- [ ] Define review/regenerate UX rules.
+- [ ] Define child-safety product rules as executable requirements.
+- [ ] Add product acceptance tests where practical.
+- [ ] Keep the deterministic vertical slice green.
 
 ## Acceptance Criteria
 
-The repository must contain enough verified architecture and code that a new LLM can clone it, read the control documents, run the project/tests, identify the active task, and implement the next task without needing prior conversation context.
+A new LLM must be able to read the repository control documents, run the existing checks, understand the Phase 01 acceptance criteria, and implement the next product increment without prior conversation context.
 
 ## Next Handoff
 
-When this task is completed, update this file to the next phase/task and record the verification evidence in `docs/PROJECT_STATUS.md`.
+When Phase 01 criteria are complete, update `docs/PROJECT_STATUS.md` and move `planning/CURRENT_TASK.md` to Phase 02.

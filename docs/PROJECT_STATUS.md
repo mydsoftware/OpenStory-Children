@@ -3,57 +3,55 @@
 ## Current State
 
 - **Phase:** 00 — Foundation
-- **Milestone:** Project continuity + product/architecture specification
+- **Milestone:** First executable vertical slice
 - **Status:** IN_PROGRESS
-- **Implementation maturity:** Specification foundation complete; application code not started
-- **Last verified:** Repository documents inspected after initialization
+- **Implementation maturity:** Runnable monorepo scaffold with core domain pipeline and web demo
+- **Last verified:** Repository state after vertical-slice commit; CI verification is the next check
 
 ## Completed
 
-- Repository created and public.
-- README established as the permanent project control center.
-- AI continuation protocol established in `AGENTS.md`.
-- Zero-to-V1 roadmap established.
-- Product specification established.
-- Architecture specification established.
-- AI/agent architecture established.
-- Initial data model established.
-- Character consistency requirements established.
-- Architectural decision log established.
-- Current task handoff established.
+- Public repository and persistent AI handoff protocol.
+- Product, architecture, AI architecture, data model, character consistency, and roadmap documents.
+- TypeScript + pnpm monorepo scaffold.
+- `@openstory/core` package with Zod-validated canonical book schemas.
+- Provider-neutral `LLMProvider` and `ImageProvider` contracts.
+- Deterministic story-input → book-model pipeline.
+- Basic RTL web page rendering the generated book model.
+- First Vitest unit test for the vertical slice.
 
 ## In Progress
 
-- Select and document the implementation stack.
-- Define exact package boundaries and executable contracts.
-- Build the first executable vertical slice.
+- CI verification and hardening of the baseline.
+- Phase 01 product definition and Phase 02 exact domain/provider contracts.
 
 ## Not Yet Implemented
 
-- Web application
-- Story engine
+- Real LLM adapters
 - Character engine
-- Image generation providers
-- Comic/page renderer
-- Book export
+- Image generation
+- Comic layout engine
+- Persistence
+- Export/PDF
 - Agent orchestration runtime
 - Authentication/accounts
-- Persistence
-- Automated test suite
-- CI/CD
+- Production observability
 
-## Blockers
+## Verification
 
-None currently.
+Expected baseline commands:
+
+```bash
+pnpm install
+pnpm check
+pnpm --filter @openstory/web build
+```
+
+CI is responsible for executing the baseline on every change.
 
 ## Next Concrete Task
 
-1. Finalize the implementation stack and monorepo structure.
-2. Scaffold the project.
-3. Add lint/type/test baseline.
-4. Implement the smallest end-to-end vertical slice: prompt → structured story → deterministic book model → basic rendered page.
-5. Verify it and update this file.
+Move into Phase 01: convert product requirements into executable UX/domain acceptance criteria, while preserving the runnable vertical slice.
 
 ## Handoff Notes
 
-Any LLM continuing this project must read `AGENTS.md`, this file, and `planning/CURRENT_TASK.md` before coding. Do not infer progress from conversation history.
+Any LLM continuing this project must read `AGENTS.md`, this file, and `planning/CURRENT_TASK.md` before coding. Never infer project progress from conversation history.
