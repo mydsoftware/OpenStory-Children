@@ -6,5 +6,4 @@ export * from "./providers.js";
 export * from "./provider-adapters.js";
 export * from "./renderer.js";
 export * from "./book-store.js";
-export * from "./file-book-store.js";
 export * from "./orchestrator.js";
