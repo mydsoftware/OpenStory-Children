@@ -5,39 +5,44 @@
 - **Phase:** 11 — Web Product / V1 Core
 - **Milestone:** Local-first executable comic-book studio
 - **Status:** IN_PROGRESS
-- **Implementation maturity:** Usable V1 core with deterministic generation, QA, renderer, provider configuration, persistence contract, orchestration and `/studio` UI.
-- **Last verified:** Repository implementation review on 2026-09-15. GitHub Actions run availability is still environment-dependent.
+- **Implementation maturity:** Usable V1 core with deterministic generation, QA, renderer, provider adapters, durable filesystem persistence, project API, orchestration and `/studio` library workflow.
+- **Last repository review:** 2026-09-15.
 
-## Completed
+## Verified Implemented
 
-- Persistent AI-agent handoff protocol and roadmap.
 - TypeScript + pnpm monorepo.
 - Zod canonical book model.
-- Structured story engine with deterministic fallback.
+- Deterministic story engine and fallback generation.
 - Age-band-aware Persian generation.
 - Versioned character identity and asset reference fields.
 - Page/panel/dialogue model.
 - Child-safety and continuity QA with scoring.
 - Basic repair loop.
 - Provider-neutral LLM/Image contracts.
-- Ollama, LM Studio/OpenAI-compatible and ComfyUI configuration helpers.
+- Real Ollama structured-output adapter.
+- Real LM Studio/OpenAI-compatible structured-output adapter.
+- ComfyUI image generation adapter with workflow submission and polling.
 - Portable RTL HTML comic renderer with print CSS.
 - `/studio` browser creation flow.
-- HTML export from the browser.
-- BookStore contract and in-memory persistence implementation.
-- Generation orchestrator with QA/repair path.
+- Persistent filesystem `FileBookStore`.
+- `/api/books` create/list endpoint.
+- `/api/books/[id]` load/delete endpoint.
+- Studio project library with load/delete actions.
+- HTML export from the studio.
 - Persian end-user/developer usage guide.
 
-## Current limitations before V1.0
+## Current Limitations Before V1.0
 
-- Real network LLM/Image provider implementations are not yet enabled by default.
-- Persistent disk/SQLite store is still required for durable projects across restarts.
-- Native server PDF generation is not included; browser print is the current path.
-- Full visual image generation and character-reference enforcement remain to be implemented.
-- Full editor, project library, asset management and regeneration UX remain to be implemented.
-- Browser E2E verification must be executed against a running server before release.
+- Studio provider selection/configuration is not yet exposed in the UI.
+- The current API generation path still uses the deterministic story engine; real LLM/image providers are available as core adapters but are not yet wired into the generation job.
+- Page/panel editing and scoped regeneration are not complete.
+- Character reference assets and visual consistency enforcement are not complete.
+- Provider health checks, retries and richer job recovery are not complete.
+- Native server PDF generation is not included; browser print remains the current PDF path.
+- Browser E2E verification has not been executed in this environment because external network/DNS access is unavailable to the execution runtime.
+- `pnpm check` and production build therefore require verification in a network-enabled environment.
 
-## Verification contract
+## Verification Contract
 
 ```bash
 pnpm install
@@ -46,17 +51,21 @@ pnpm --filter @openstory/web build
 pnpm --filter @openstory/web dev
 ```
 
-Then verify `/studio` in a browser: generation, QA, responsive layout and HTML export.
+Then verify `/studio` in a browser: create, persist, reload, delete, QA, responsive layout and HTML export.
 
 ## Next Concrete Tasks
 
-1. Add durable local project storage.
-2. Add real Ollama/LM Studio structured generation adapters.
-3. Add ComfyUI image generation adapter and asset lifecycle.
-4. Add project/book/page editor and regeneration controls.
-5. Add browser E2E tests and visual verification.
-6. Complete release hardening, documentation, license and V1.0 acceptance.
+1. Wire provider selection into the studio/job layer.
+2. Add page/panel editor and scoped regeneration.
+3. Add character assets/reference lifecycle and consistency checks.
+4. Add integration/API/provider failure tests.
+5. Run browser E2E and repair every failure.
+6. Sync release documentation and perform V1.0 acceptance.
 
-## Handoff Notes
+## Agentic Repair Rule
+
+When a check fails, continue the engineering loop: inspect the actual failure, identify the smallest coherent fix, implement it, rerun the failed check, and continue. Do not claim completion from documentation alone.
+
+## Handoff
 
 Any LLM continuing this project must read `AGENTS.md`, this file, and `planning/CURRENT_TASK.md` before coding. Never infer project progress from conversation history.
