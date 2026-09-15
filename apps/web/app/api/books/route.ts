@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { FileBookStore, StoryInputSchema, generateStoryBook, validateBook } from "@openstory/core";
+import { StoryInputSchema, generateStoryBook, validateBook } from "@openstory/core";
+import { FileBookStore } from "@openstory/core/server";
 
 export const runtime = "nodejs";
-
 const store = new FileBookStore(process.env.OPENSTORY_DATA_DIR ?? ".openstory/books");
 
 export async function GET() {
