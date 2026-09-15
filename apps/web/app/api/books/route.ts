@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { StoryInputSchema, generateStoryBook, validateBook } from "@openstory/core";
+import { StoryInputSchema, generateWithFallback, createLLMProviderFromEnv, validateBook } from "@openstory/core";
 import { FileBookStore } from "@openstory/core/server";
 
 export const runtime = "nodejs";
@@ -13,10 +13,11 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const input = StoryInputSchema.parse(await request.json());
-    const book = generateStoryBook(input);
-    const qa = validateBook(book);
-    const saved = await store.save(book);
-    return NextResponse.json({ book: saved, qa }, { status: 201 });
+    const provider = createLLMProviderFromEnv();
+    const result = await generateWithFallback(input, provider);
+    const qa = validateBook(result.book);
+    const saved = await store.save(result.book);
+    return NextResponse.json({ book: saved, qa, provider: provider?.metadata ?? { id: "deterministic", name: "Deterministic fallback", local: true }, usedFallback: result.usedFallback }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid request" }, { status: 400 });
   }
