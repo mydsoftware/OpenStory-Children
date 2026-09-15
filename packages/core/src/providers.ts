@@ -3,19 +3,23 @@ export interface LLMProvider { metadata: ProviderMetadata; generateStructured<T>
 export interface ImageProvider { metadata: ProviderMetadata; generate(input: { prompt: string; references?: string[] }): Promise<{ assetId: string; url: string }>; }
 export interface ProviderRegistry { llm?: LLMProvider; image?: ImageProvider; }
 
+export interface OllamaConfig { kind: "ollama"; baseUrl: string; model: string; timeoutMs?: number; }
+export interface OpenAICompatibleConfig { kind: "openai-compatible"; baseUrl: string; model: string; timeoutMs?: number; apiKey?: string; }
+export interface ComfyUIConfig { kind: "comfyui"; baseUrl: string; timeoutMs?: number; pollIntervalMs?: number; workflow?: Record<string, unknown>; }
+
 export class DeterministicLLMProvider implements LLMProvider {
   metadata = { id: "deterministic", name: "Deterministic fallback", local: true };
   async generateStructured<T>(): Promise<T> { throw new Error("No LLM configured. Use the deterministic story engine or configure an LLM provider."); }
 }
 
-export function createOllamaConfig(baseUrl = "http://localhost:11434", model = "qwen2.5:7b") {
-  return { kind: "ollama" as const, baseUrl: baseUrl.replace(/\/$/, ""), model };
+export function createOllamaConfig(baseUrl = "http://localhost:11434", model = "qwen2.5:7b"): OllamaConfig {
+  return { kind: "ollama", baseUrl: baseUrl.replace(/\/$/, ""), model };
 }
 
-export function createOpenAICompatibleConfig(baseUrl = "http://localhost:1234/v1", model = "local-model") {
-  return { kind: "openai-compatible" as const, baseUrl: baseUrl.replace(/\/$/, ""), model };
+export function createOpenAICompatibleConfig(baseUrl = "http://localhost:1234/v1", model = "local-model"): OpenAICompatibleConfig {
+  return { kind: "openai-compatible", baseUrl: baseUrl.replace(/\/$/, ""), model };
 }
 
-export function createComfyUIConfig(baseUrl = "http://localhost:8188") {
-  return { kind: "comfyui" as const, baseUrl: baseUrl.replace(/\/$/, "") };
+export function createComfyUIConfig(baseUrl = "http://localhost:8188"): ComfyUIConfig {
+  return { kind: "comfyui", baseUrl: baseUrl.replace(/\/$/, "") };
 }
