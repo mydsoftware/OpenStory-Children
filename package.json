@@ -1,0 +1,14 @@
+{
+  "name": "openstory-children",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.15.1",
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "build": "pnpm --recursive build",
+    "typecheck": "pnpm --recursive typecheck",
+    "test": "pnpm --recursive test",
+    "lint": "pnpm --recursive lint",
+    "check": "pnpm typecheck && pnpm test && pnpm build"
+  }
+}
