@@ -1,4 +1,6 @@
 export interface ProviderMetadata { id: string; name: string; model?: string; local?: boolean; }
+export interface ProviderHealth { healthy: boolean; status: "online" | "offline" | "degraded" | "fallback" | "unknown"; latencyMs?: number; error?: string; checkedAt: string; }
+export interface HealthCheckable { health(): Promise<ProviderHealth>; }
 export interface LLMProvider { metadata: ProviderMetadata; generateStructured<T>(input: { prompt: string; schema: unknown }): Promise<T>; }
 export interface ImageProvider { metadata: ProviderMetadata; generate(input: { prompt: string; references?: string[] }): Promise<{ assetId: string; url: string }>; }
 export interface ProviderRegistry { llm?: LLMProvider; image?: ImageProvider; }
@@ -6,6 +8,9 @@ export interface ProviderRegistry { llm?: LLMProvider; image?: ImageProvider; }
 export interface OllamaConfig { kind: "ollama"; baseUrl: string; model: string; timeoutMs?: number; }
 export interface OpenAICompatibleConfig { kind: "openai-compatible"; baseUrl: string; model: string; timeoutMs?: number; apiKey?: string; }
 export interface ComfyUIConfig { kind: "comfyui"; baseUrl: string; timeoutMs?: number; pollIntervalMs?: number; workflow?: Record<string, unknown>; }
+
+export interface RetryPolicy { attempts: number; delayMs: number; backoff: number; }
+export const DEFAULT_RETRY_POLICY: RetryPolicy = { attempts: 3, delayMs: 300, backoff: 2 };
 
 export class DeterministicLLMProvider implements LLMProvider {
   metadata = { id: "deterministic", name: "Deterministic fallback", local: true };
