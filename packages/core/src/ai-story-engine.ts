@@ -31,8 +31,8 @@ export async function generateStoryBookWithLLM(rawInput: StoryInput, provider: L
   return parsed;
 }
 
-export async function generateWithFallback(rawInput: StoryInput, provider?: LLMProvider): Promise<{ book: Book; usedFallback: boolean }> {
+export async function generateWithFallback(rawInput: StoryInput, provider?: LLMProvider): Promise<{ book: Book; usedFallback: boolean; providerError?: string }> {
   if (!provider) return { book: generateStoryBook(rawInput), usedFallback: true };
   try { return { book: await generateStoryBookWithLLM(rawInput, provider), usedFallback: false }; }
-  catch { return { book: generateStoryBook(rawInput), usedFallback: true }; }
+  catch (error) { return { book: generateStoryBook(rawInput), usedFallback: true, providerError: error instanceof Error ? error.message : String(error) }; }
 }
