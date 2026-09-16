@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { createLLMProvider } from "@openstory/core";
-import type { LLMProviderSelection } from "@openstory/core";
-
-export const runtime = "nodejs";
 
 type ProviderKind = "none" | "ollama" | "lmstudio";
-type ProviderConfig = LLMProviderSelection & { provider: ProviderKind };
+type ProviderConfig = { provider: ProviderKind; baseUrl: string; model: string };
+type ConfiguredLLM = { provider: "ollama" | "lmstudio"; baseUrl: string; model: string };
+
+export const runtime = "nodejs";
 
 const dataDir = process.env.OPENSTORY_DATA_DIR ?? ".openstory/books";
 const configPath = path.join(path.dirname(dataDir), "providers.json");
@@ -30,7 +30,8 @@ export async function GET() {
   const config = await readConfig();
   if (config.provider === "none") return NextResponse.json({ config, provider: { id: "deterministic", name: "Deterministic fallback", local: true }, health: { healthy: true, status: "fallback", checkedAt: new Date().toISOString() } });
   try {
-    const provider = createLLMProvider(config);
+    const selection: ConfiguredLLM = { provider: config.provider, baseUrl: config.baseUrl, model: config.model };
+    const provider = createLLMProvider(selection);
     const health = typeof (provider as { health?: () => Promise<unknown> }).health === "function"
       ? await (provider as typeof provider & { health: () => Promise<unknown> }).health()
       : { healthy: false, status: "unknown", error: "Provider does not expose a health check.", checkedAt: new Date().toISOString() };
