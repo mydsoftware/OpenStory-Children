@@ -22,17 +22,20 @@ Complete the local-first executable studio vertical slice and release gate witho
 - [x] Project library with load/delete actions.
 - [x] Browser-safe/server-only core package entrypoints.
 - [x] Automated CI typecheck, tests and web production build.
-- [x] Agentic repair loop completed multiple CI failures until run 62 passed.
+- [x] Agentic repair loop completed multiple CI failures until green.
 - [x] README, status and usage documentation synchronized.
 - [x] MIT license committed.
+- [x] Persistent local provider configuration API with Ollama/LM Studio selection.
+- [x] Provider health status endpoint and Studio controls.
+- [x] Validated book PATCH API for safe edits.
+- [x] Studio page/panel text editing with explicit save.
 
 ## Remaining Release-Gate Tasks
 
-- [ ] Add provider selection/configuration and health status to the studio UI.
-- [ ] Add page/panel editing and scoped regeneration.
+- [ ] Add scoped page/panel regeneration through the agent pipeline.
 - [ ] Add character reference/asset lifecycle and consistency enforcement.
 - [ ] Wire ComfyUI image generation into the production generation job.
-- [ ] Add provider health checks, retries and structured error states.
+- [ ] Add provider health checks, retries and structured job error states.
 - [ ] Add API/provider failure integration tests.
 - [ ] Add browser E2E/visual verification against `/studio`.
 - [ ] Repair every browser failure until the release verification loop is green.
@@ -45,4 +48,4 @@ After every implementation increment, run the available tests/build/browser chec
 
 ## Acceptance Criteria
 
-The project must provide a usable local-first workflow in which a user can create a book, optionally use a local LLM, persist it, reopen it, inspect QA, export it, and manage projects from the studio. AI providers remain optional and vendor-neutral. No V1.0 claim is allowed until automated and browser verification has actually passed.
+The project must provide a usable local-first workflow in which a user can create a book, optionally use a local LLM, persist it, reopen it, inspect QA, edit pages/panels, export it, and manage projects from the studio. AI providers remain optional and vendor-neutral. No V1.0 claim is allowed until automated and browser verification has actually passed.
