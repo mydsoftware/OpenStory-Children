@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { StoryInputSchema, generateWithFallback, createLLMProvider, createLLMProviderFromEnv, validateBook, type LLMProviderSelection } from "@openstory/core";
+import { StoryInputSchema, generateWithFallback, generateBookImages, createLLMProvider, createLLMProviderFromEnv, createImageProviderFromEnv, validateBook, type LLMProviderSelection } from "@openstory/core";
 import { FileBookStore } from "@openstory/core/server";
 
 export const runtime = "nodejs";
@@ -16,6 +16,8 @@ async function configuredProvider() {
   return createLLMProviderFromEnv();
 }
 
+function configuredImageProvider() { return createImageProviderFromEnv(); }
+
 export async function GET() {
   const books = await store.list();
   return NextResponse.json({ books });
@@ -26,9 +28,17 @@ export async function POST(request: Request) {
     const input = StoryInputSchema.parse(await request.json());
     const provider = await configuredProvider();
     const result = await generateWithFallback(input, provider);
-    const qa = validateBook(result.book);
-    const saved = await store.save(result.book);
-    return NextResponse.json({ book: saved, qa, provider: provider?.metadata ?? { id: "deterministic", name: "Deterministic fallback", local: true }, usedFallback: result.usedFallback }, { status: 201 });
+    const imageProvider = configuredImageProvider();
+    let book = result.book;
+    let imageGeneration: { generatedAssetIds: string[]; failures: string[] } = { generatedAssetIds: [], failures: [] };
+    if (imageProvider) {
+      const generated = await generateBookImages(book, imageProvider);
+      book = generated.book;
+      imageGeneration = { generatedAssetIds: generated.generatedAssetIds, failures: generated.failures };
+    }
+    const qa = validateBook(book);
+    const saved = await store.save(book);
+    return NextResponse.json({ book: saved, qa, provider: provider?.metadata ?? { id: "deterministic", name: "Deterministic fallback", local: true }, imageProvider: imageProvider?.metadata ?? null, imageGeneration, usedFallback: result.usedFallback }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid request" }, { status: 400 });
   }
