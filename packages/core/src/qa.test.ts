@@ -24,7 +24,7 @@ describe("book QA", () => {
   it("rejects a reference asset attached to another character", () => {
     const book = generateStoryBook({ idea: "دینو", ageBand: "4-5", language: "fa", pageCount: 2 });
     book.characters.push({ id: "friend", name: "دوست", description: "دوست مهربان", visualTraits: ["آبی"], version: 1, referenceAssetIds: [] });
-    book.assets.push({ id: "ref-dino", type: "character-reference", url: "https://example.com/dino.png", characterId: "friend" });
+    book.assets.push({ id: "ref-dino", type: "character-reference", url: "https://example.com/dino.png", prompt: "dino reference", characterId: "friend" });
     book.characters[0]!.referenceAssetIds = ["ref-dino"];
     const result = validateBook(book);
     expect(result.ok).toBe(false);
