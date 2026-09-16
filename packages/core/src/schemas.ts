@@ -10,6 +10,16 @@ export const StoryInputSchema = z.object({
   pageCount: z.number().int().min(1).max(64).default(10)
 });
 
+export const AssetSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(["image", "character-reference", "page-art"]),
+  url: z.string().min(1),
+  prompt: z.string().default(""),
+  characterId: z.string().optional(),
+  providerId: z.string().optional(),
+  createdAt: z.string().datetime().optional()
+});
+
 export const CharacterSchema = z.object({
   id: z.string().min(1), name: z.string().min(1), description: z.string().min(1),
   visualTraits: z.array(z.string()), version: z.number().int().positive().default(1),
@@ -24,13 +34,14 @@ export const PageSchema = z.object({ id: z.string(), pageNumber: z.number().int(
 
 export const BookSchema = z.object({
   id: z.string(), title: z.string(), language: LanguageSchema, ageBand: AgeBandSchema,
-  characters: z.array(CharacterSchema), pages: z.array(PageSchema).min(1), sourceIdea: z.string().min(1),
+  characters: z.array(CharacterSchema), assets: z.array(AssetSchema).default([]), pages: z.array(PageSchema).min(1), sourceIdea: z.string().min(1),
   schemaVersion: z.literal(1), createdAt: z.string().datetime().optional(), updatedAt: z.string().datetime().optional()
 });
 
 export type AgeBand = z.infer<typeof AgeBandSchema>;
 export type Language = z.infer<typeof LanguageSchema>;
 export type StoryInput = z.infer<typeof StoryInputSchema>;
+export type Asset = z.infer<typeof AssetSchema>;
 export type Character = z.infer<typeof CharacterSchema>;
 export type Panel = z.infer<typeof PanelSchema>;
 export type Page = z.infer<typeof PageSchema>;
