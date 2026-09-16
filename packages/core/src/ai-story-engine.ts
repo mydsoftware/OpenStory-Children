@@ -7,6 +7,7 @@ const bookJsonSchema = {
   required: ["id", "title", "language", "ageBand", "characters", "pages", "sourceIdea", "schemaVersion"],
   properties: {
     id: { type: "string" }, title: { type: "string" }, language: { enum: ["fa", "en"] }, ageBand: { enum: ["2-3", "4-5", "6-8", "9-12"] }, sourceIdea: { type: "string" }, schemaVersion: { const: 1 },
+    assets: { type: "array", items: { type: "object", required: ["id", "type", "url"], properties: { id: { type: "string" }, type: { enum: ["image", "character-reference", "page-art"] }, url: { type: "string" }, prompt: { type: "string" }, characterId: { type: "string" }, providerId: { type: "string" }, createdAt: { type: "string" } } } },
     characters: { type: "array", items: { type: "object", required: ["id", "name", "description", "visualTraits", "version"], properties: { id: { type: "string" }, name: { type: "string" }, description: { type: "string" }, visualTraits: { type: "array", items: { type: "string" } }, version: { type: "integer" }, referenceAssetIds: { type: "array", items: { type: "string" } } } } },
     pages: { type: "array", items: { type: "object", required: ["id", "pageNumber", "title", "panels"], properties: { id: { type: "string" }, pageNumber: { type: "integer" }, title: { type: "string" }, panels: { type: "array", items: { type: "object", required: ["id", "narration", "dialogue", "characterIds", "assetIds"], properties: { id: { type: "string" }, narration: { type: "string" }, dialogue: { type: "array", items: { type: "string" } }, characterIds: { type: "array", items: { type: "string" } }, assetIds: { type: "array", items: { type: "string" } } } } } } } }
   }
@@ -18,7 +19,9 @@ export async function generateStoryBookWithLLM(rawInput: StoryInput, provider: L
     "You are the story production engine for OpenStory Children.",
     "Return ONLY valid JSON matching the supplied schema. No markdown.",
     `Language: ${input.language}; age band: ${input.ageBand}; pages: ${input.pageCount}.`,
-    "Create a warm, child-safe comic. Keep the same character identity across all pages. Avoid violence, sexual content, drugs, self-harm and frightening graphic content.",
+    "Create a warm, child-safe comic. Keep the same character identity across all pages.",
+    "If character reference assets are supplied by the caller in a future generation stage, preserve their IDs; do not invent unavailable asset URLs.",
+    "Avoid violence, sexual content, drugs, self-harm and frightening graphic content.",
     `User idea: ${input.idea}`
   ].join("\n");
   const result = await provider.generateStructured<unknown>({ prompt, schema: bookJsonSchema });
