@@ -21,22 +21,26 @@ Complete the local-first executable studio vertical slice and release gate witho
 - [x] Studio connected to the persistent project API.
 - [x] Project library with load/delete actions.
 - [x] Browser-safe/server-only core package entrypoints.
-- [x] Automated CI typecheck, tests and web production build.
+- [x] Automated CI typecheck, tests and web production build baseline.
 - [x] Agentic repair loop completed multiple CI failures until green.
 - [x] README, status and usage documentation synchronized.
 - [x] MIT license committed.
 - [x] Persistent local provider configuration API with Ollama/LM Studio selection.
-- [x] Provider health status endpoint and Studio controls.
+- [x] Structured provider health responses for fallback, online, degraded and offline states.
+- [x] Provider retry policy with bounded exponential backoff.
+- [x] Resilient Ollama, OpenAI-compatible and ComfyUI provider operations.
+- [x] Structured generation job error states with stage, code and retryability.
+- [x] Provider resilience unit tests.
+- [x] Provider API integration tests for fallback, invalid configuration and offline health.
 - [x] Validated book PATCH API for safe edits.
 - [x] Studio page/panel text editing with explicit save.
 
 ## Remaining Release-Gate Tasks
 
-- [ ] Add scoped page/panel regeneration through the agent pipeline.
-- [ ] Add character reference/asset lifecycle and consistency enforcement.
-- [ ] Wire ComfyUI image generation into the production generation job.
-- [ ] Add provider health checks, retries and structured job error states.
-- [ ] Add API/provider failure integration tests.
+- [ ] Complete scoped page/panel regeneration through the agent pipeline.
+- [ ] Complete character reference/asset lifecycle and consistency enforcement.
+- [ ] Complete production image generation job orchestration rather than request-scoped execution.
+- [ ] Add comprehensive API/provider failure integration coverage after CI is green.
 - [ ] Add browser E2E/visual verification against `/studio`.
 - [ ] Repair every browser failure until the release verification loop is green.
 - [ ] Add contribution/release documentation.
