@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { createLLMProvider } from "@openstory/core";
+import type { LLMProviderSelection } from "@openstory/core";
 
 export const runtime = "nodejs";
 
 type ProviderKind = "none" | "ollama" | "lmstudio";
-type ProviderConfig = { provider: ProviderKind; baseUrl: string; model: string };
+type ProviderConfig = LLMProviderSelection & { provider: ProviderKind };
 
 const dataDir = process.env.OPENSTORY_DATA_DIR ?? ".openstory/books";
 const configPath = path.join(path.dirname(dataDir), "providers.json");
@@ -26,13 +28,15 @@ async function readConfig(): Promise<ProviderConfig> {
 
 export async function GET() {
   const config = await readConfig();
-  if (config.provider === "none") return NextResponse.json({ config, healthy: true, status: "fallback" });
+  if (config.provider === "none") return NextResponse.json({ config, provider: { id: "deterministic", name: "Deterministic fallback", local: true }, health: { healthy: true, status: "fallback", checkedAt: new Date().toISOString() } });
   try {
-    const url = config.provider === "ollama" ? `${config.baseUrl.replace(/\/$/, "")}/api/tags` : `${config.baseUrl.replace(/\/$/, "")}/models`;
-    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    return NextResponse.json({ config, healthy: response.ok, status: response.ok ? "online" : `http-${response.status}` });
+    const provider = createLLMProvider(config);
+    const health = typeof (provider as { health?: () => Promise<unknown> }).health === "function"
+      ? await (provider as typeof provider & { health: () => Promise<unknown> }).health()
+      : { healthy: false, status: "unknown", error: "Provider does not expose a health check.", checkedAt: new Date().toISOString() };
+    return NextResponse.json({ config, provider: provider.metadata, health });
   } catch (error) {
-    return NextResponse.json({ config, healthy: false, status: error instanceof Error ? error.message : "offline" });
+    return NextResponse.json({ config, provider: { id: config.provider, name: config.provider }, health: { healthy: false, status: "unknown", error: error instanceof Error ? error.message : String(error), checkedAt: new Date().toISOString() } });
   }
 }
 
@@ -41,11 +45,11 @@ export async function POST(request: Request) {
     const body = await request.json() as Partial<ProviderConfig>;
     const provider = body.provider;
     if (provider !== "none" && provider !== "ollama" && provider !== "lmstudio") throw new Error("Provider must be none, ollama or lmstudio.");
-    const config: ProviderConfig = {
-      provider,
-      baseUrl: String(body.baseUrl ?? (provider === "lmstudio" ? "http://localhost:1234/v1" : "http://localhost:11434")).replace(/\/$/, ""),
-      model: String(body.model ?? (provider === "ollama" ? "qwen2.5:7b" : "local-model"))
-    };
+    const baseUrl = String(body.baseUrl ?? (provider === "lmstudio" ? "http://localhost:1234/v1" : "http://localhost:11434")).trim();
+    if (!/^https?:\/\//i.test(baseUrl)) throw new Error("Provider base URL must use http or https.");
+    const model = String(body.model ?? (provider === "ollama" ? "qwen2.5:7b" : "local-model")).trim();
+    if (provider !== "none" && !model) throw new Error("Provider model is required.");
+    const config: ProviderConfig = { provider, baseUrl: baseUrl.replace(/\/$/, ""), model };
     await fs.mkdir(path.dirname(configPath), { recursive: true });
     await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
     return NextResponse.json({ config, saved: true });
