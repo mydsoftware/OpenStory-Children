@@ -5,6 +5,7 @@ export * from "./ai-story-engine.js";
 export * from "./qa.js";
 export * from "./providers.js";
 export * from "./provider-adapters.js";
+export * from "./provider-resilience.js";
 export * from "./provider-factory.js";
 export * from "./image-generation.js";
 export * from "./renderer.js";
