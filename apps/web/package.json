@@ -4,5 +4,5 @@
   "private": true,
   "scripts": { "dev": "next dev", "build": "next build", "typecheck": "tsc --noEmit", "test": "vitest run", "lint": "tsc --noEmit" },
   "dependencies": { "@openstory/core": "workspace:*", "next": "^15.5.2", "react": "^19.1.1", "react-dom": "^19.1.1" },
-  "devDependencies": { "@types/node": "^22.15.30", "@types/react": "^19.1.10", "@types/react-dom": "^19.1.7", "typescript": "^5.9.2", "vitest": "^3.2.4" }
+  "devDependencies": { "@openstory/core": "workspace:*", "@types/node": "^22.15.30", "@types/react": "^19.1.10", "@types/react-dom": "^19.1.7", "typescript": "^5.9.2", "vitest": "^3.2.4" }
 }
