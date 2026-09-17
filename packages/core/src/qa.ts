@@ -13,6 +13,7 @@ export function validateBook(book: Book): QAResult {
   const characterIds = new Set(book.characters.map(c => c.id));
   const assetIds = new Set(book.assets.map(a => a.id));
   const characterById = new Map(book.characters.map(c => [c.id, c]));
+  const warnedCharactersWithoutReferences = new Set<string>();
 
   for (const asset of book.assets) {
     if (asset.characterId && !characterIds.has(asset.characterId)) errors.push(`شخصیت ${asset.characterId} برای دارایی ${asset.id} تعریف نشده است.`);
@@ -33,7 +34,10 @@ export function validateBook(book: Book): QAResult {
       for (const assetId of panel.assetIds) if (!assetIds.has(assetId)) errors.push(`دارایی ${assetId} در ${panel.id} تعریف نشده است.`);
       for (const characterId of panel.characterIds) {
         const character = characterById.get(characterId);
-        if (character && character.referenceAssetIds.length === 0) warnings.push(`شخصیت ${character.name} در ${panel.id} هیچ مرجع تصویری ندارد.`);
+        if (character && character.referenceAssetIds.length === 0 && !warnedCharactersWithoutReferences.has(characterId)) {
+          warnings.push(`شخصیت ${character.name} در ${panel.id} هیچ مرجع تصویری ندارد.`);
+          warnedCharactersWithoutReferences.add(characterId);
+        }
       }
     }
     const text = [page.title, ...page.panels.flatMap(p => [p.narration, ...p.dialogue])].join(" ");
