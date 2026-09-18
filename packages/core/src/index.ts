@@ -8,6 +8,7 @@ export * from "./provider-adapters.js";
 export * from "./provider-resilience.js";
 export * from "./provider-factory.js";
 export * from "./image-generation.js";
+export * from "./panel-regeneration.js";
 export * from "./renderer.js";
 export * from "./book-store.js";
 export * from "./orchestrator.js";
