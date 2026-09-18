@@ -14,8 +14,8 @@ describe("scoped panel regeneration", () => {
     const secondBefore = JSON.stringify(book.pages[1]);
     const provider: LLMProvider = {
       metadata: { id: "test-llm", name: "Test LLM", local: true },
-      async generateStructured() {
-        return { narration: "دینو آرام جلو می‌رود.", dialogue: ["بیا با هم پیدایش کنیم!"] };
+      async generateStructured<T>() {
+        return { narration: "دینو آرام جلو می‌رود.", dialogue: ["بیا با هم پیدایش کنیم!"] } as unknown as T;
       }
     };
     const result = await regeneratePanel(book, first.id, first.panels[0]!.id, provider);
@@ -30,7 +30,7 @@ describe("scoped panel regeneration", () => {
     const book = generateStoryBook(input);
     const provider: LLMProvider = {
       metadata: { id: "test-llm", name: "Test LLM", local: true },
-      async generateStructured() { throw new Error("provider timeout"); }
+      async generateStructured<T>() { throw new Error("provider timeout"); }
     };
     const result = await regeneratePanel(book, book.pages[0]!.id, book.pages[0]!.panels[0]!.id, provider);
     expect(result.usedFallback).toBe(true);
