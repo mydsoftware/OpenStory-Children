@@ -6,7 +6,7 @@
 - **Milestone:** Local-first executable comic-book studio
 - **Status:** IN_PROGRESS
 - **Implementation maturity:** Usable V1 core with deterministic generation, optional local LLM generation, QA, renderer, provider adapters, durable persistence, project API, scoped editing/regeneration, character asset references and unified orchestration.
-- **Last repository review:** 2026-09-18.
+- **Last repository review:** 2026-09-18 (CI run #112 green).
 
 ## Verified Implemented
 
@@ -32,7 +32,7 @@
 - Character reference/asset consistency enforcement in QA.
 - Unified BookOrchestrator generation → image → QA → persistence pipeline.
 - Automated GitHub CI for typecheck, tests and production build.
-- CI run #107 verified green on commit 628c09321e097177e3c67ec6609364b9e9349f46.
+- CI run #112 verified green on commit 996899f9fbf774346c58575fff71ea2069463788.
 
 ## Current Release-Gate Limitations
 
