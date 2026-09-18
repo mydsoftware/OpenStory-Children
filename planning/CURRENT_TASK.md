@@ -23,7 +23,7 @@ Complete and verify the local-first executable comic-book studio vertical slice 
 - [x] Character reference/asset fields and consistency QA enforcement.
 - [x] Production image generation integrated into BookOrchestrator.
 - [x] Orchestrator tests covering success, image failure and deterministic fallback.
-- [x] CI run #107 green for commit 628c09321e097177e3c67ec6609364b9e9349f46.
+- [x] CI run #112 green for commit 996899f9fbf774346c58575fff71ea2069463788.
 
 ## Remaining Release-Gate Tasks
 
