@@ -5,8 +5,8 @@
 - **Phase:** 11 — Web Product / V1 Core
 - **Milestone:** Local-first executable comic-book studio
 - **Status:** IN_PROGRESS
-- **Implementation maturity:** Usable V1 core with deterministic generation, optional local LLM generation, QA, renderer, provider adapters, durable filesystem persistence, project API, orchestration and `/studio` library workflow.
-- **Last repository review:** 2026-09-15.
+- **Implementation maturity:** Usable V1 core with deterministic generation, optional local LLM generation, QA, renderer, provider adapters, durable persistence, project API, scoped editing/regeneration, character asset references and unified orchestration.
+- **Last repository review:** 2026-09-18.
 
 ## Verified Implemented
 
@@ -17,34 +17,29 @@
 - Versioned character identity and asset reference fields.
 - Page/panel/dialogue model.
 - Child-safety and continuity QA with scoring.
-- Basic repair loop.
+- Repair helper and scoped panel regeneration.
 - Provider-neutral LLM/Image contracts.
-- Real Ollama structured-output adapter.
-- Real LM Studio/OpenAI-compatible structured-output adapter.
+- Ollama and LM Studio/OpenAI-compatible structured-output adapters.
 - ComfyUI image generation adapter with workflow submission and polling.
-- Validated LLM story generation with deterministic fallback.
-- Environment-driven local LLM provider selection for the server API.
+- Persistent provider configuration and health API.
+- Provider retry policy and structured generation job errors.
 - Portable RTL HTML comic renderer with print CSS.
-- `/studio` browser creation flow.
-- Persistent filesystem `FileBookStore`.
-- `/api/books` create/list endpoint.
-- `/api/books/[id]` load/delete endpoint.
-- Studio project library with load/delete actions.
-- HTML export from the studio.
-- Browser/server package-entry separation for Node filesystem persistence.
+- /studio browser creation flow.
+- Persistent filesystem FileBookStore.
+- /api/books create/list and /api/books/[id] load/delete/PATCH.
+- /api/books/[id]/regenerate scoped panel regeneration.
+- Studio project library, load/delete, page/panel editing, regeneration and HTML export.
+- Character reference/asset consistency enforcement in QA.
+- Unified BookOrchestrator generation → image → QA → persistence pipeline.
 - Automated GitHub CI for typecheck, tests and production build.
-- CI verified green on run 62 after an agentic repair loop fixed configuration, schema, workspace package-resolution and test-harness failures.
-- Persian end-user/developer usage guide.
+- CI run #107 verified green on commit 628c09321e097177e3c67ec6609364b9e9349f46.
 
-## Current Limitations Before V1.0
+## Current Release-Gate Limitations
 
-- Studio provider selection/configuration is still environment-driven rather than user-selectable in the UI.
-- Image generation is available as a core ComfyUI adapter but is not yet part of the default book-generation job.
-- Page/panel editing and scoped regeneration are not complete.
-- Character reference assets and visual consistency enforcement are not complete.
-- Provider health checks, retries and richer job recovery are not complete.
-- Native server PDF generation is not included; browser print remains the current PDF path.
-- Browser E2E/visual verification has not been executed in this environment because the execution runtime cannot start a local server with external browser tooling.
+- Browser E2E/visual verification has not yet been executed in the available tool environment.
+- Native server-side PDF generation is not included; browser print remains the PDF path.
+- Audio/video are extension points, not part of the V1 core release gate.
+- The orchestrator currently executes image generation request-scoped; durable background job infrastructure is a future scaling concern, not a blocker for the local-first vertical slice.
 
 ## Verification Contract
 
@@ -55,17 +50,16 @@ pnpm --filter @openstory/web build
 pnpm --filter @openstory/web dev
 ```
 
-CI has verified `pnpm check` and the web production build successfully. A local browser pass is still required for the final release gate.
+CI has verified pnpm check and the web production build. A local browser pass is still required for the final release gate.
 
 ## Next Concrete Tasks
 
-1. Add provider configuration/health UI.
-2. Add page/panel editor and scoped regeneration.
-3. Add character asset/reference lifecycle and consistency checks.
-4. Add image generation into the production job pipeline.
-5. Add API/provider failure integration tests.
-6. Run browser E2E and repair every failure.
-7. Add release hardening and only then perform V1.0 acceptance.
+1. Run browser E2E/visual verification against /studio.
+2. Repair every browser failure and rerun verification.
+3. Complete any missing API/provider integration coverage supported by the repository test harness.
+4. Add release/contribution documentation.
+5. Final CI and V1.0 acceptance.
+6. Tag v1.0.0 only after all gates pass.
 
 ## Agentic Repair Rule
 
@@ -73,4 +67,4 @@ When a check fails, continue the engineering loop: inspect the actual failure, i
 
 ## Handoff
 
-Any LLM continuing this project must read `AGENTS.md`, this file, and `planning/CURRENT_TASK.md` before coding. Never infer project progress from conversation history.
+Any LLM continuing this project must read AGENTS.md, this file, and planning/CURRENT_TASK.md before coding. Never infer project progress from conversation history.
