@@ -1,0 +1,25 @@
+name: Browser E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm --filter @openstory/core build
+      - run: pnpm --filter @openstory/web build
+      - run: pnpm --filter @openstory/web exec playwright install --with-deps chromium
+      - run: pnpm exec playwright test
