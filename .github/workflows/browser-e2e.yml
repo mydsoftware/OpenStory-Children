@@ -23,4 +23,4 @@ jobs:
       - run: pnpm --filter @openstory/core build
       - run: pnpm --filter @openstory/web build
       - run: pnpm --filter @openstory/web exec playwright install --with-deps chromium
-      - run: pnpm --filter @openstory/web exec playwright test ../../playwright.config.ts
+      - run: pnpm --filter @openstory/web exec playwright test --config=../../playwright.config.ts
