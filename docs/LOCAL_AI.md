@@ -28,7 +28,7 @@ The project workflow is committed at:
 
 It is an API-format workflow, not a UI export. It contains:
 
-`CheckpointLoaderSimple → CLIP Text Encode → IPAdapter Plus → KSampler → VAEDecode → SaveImage`
+`DiffusersLoader → CLIP Text Encode → IPAdapter Plus → KSampler → VAEDecode → SaveImage`
 
 and a reference branch:
 
