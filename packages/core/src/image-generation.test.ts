@@ -14,8 +14,8 @@ describe("production image generation", () => {
     };
     const result = await generateBookImages(book, provider);
     expect(result.failures).toEqual([]);
-    expect(result.generatedAssetIds).toHaveLength(2);
-    expect(result.book.assets).toHaveLength(2);
+    expect(result.generatedAssetIds).toHaveLength(3);
+    expect(result.book.assets).toHaveLength(3);
     expect(result.book.pages.every(page => page.panels.every(panel => panel.assetIds.length === 1))).toBe(true);
     expect(calls[0]?.prompt).toContain("دینو");
     expect(calls[0]?.references).toBeUndefined();
