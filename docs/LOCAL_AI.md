@@ -1,41 +1,125 @@
-# Local AI Providers
+# Local AI — Windows + SD 1.5 + ComfyUI
 
-OpenStory Children keeps AI providers optional and vendor-neutral.
+OpenStory Children is local-first. The V1 image pipeline uses **ComfyUI + Stable Diffusion 1.5 + IPAdapter Plus** and does not require a cloud API.
 
-## Ollama
+## Target hardware
 
-Default endpoint:
+The workflow is intentionally conservative for an NVIDIA GPU with about 6 GB VRAM, including GTX 1660 Ti 6 GB:
 
-`http://localhost:11434`
+- 512×512
+- batch 1
+- 20–25 steps (default 22)
+- CFG 6.5
+- DPM++ 2M
+- Karras
+- IPAdapter weight 0.75
 
-Example model configuration:
-
-`qwen2.5:7b`
-
-The core adapter sends structured JSON requests through Ollama's chat API.
-
-## LM Studio
-
-Default endpoint:
-
-`http://localhost:1234/v1`
-
-The adapter uses the OpenAI-compatible `/chat/completions` endpoint and supports an optional API key.
+Do not add FLUX, SDXL-heavy, Qwen Image, Wan or HunyuanVideo to this V1 workflow.
 
 ## ComfyUI
 
-Default endpoint:
+Run ComfyUI locally at:
 
-`http://localhost:8188`
+`http://127.0.0.1:8188`
 
-A ComfyUI API workflow is supplied to the adapter. The prompt placeholder `{{PROMPT}}` is replaced before submission. The adapter polls `/history/{prompt_id}` and returns the first generated image asset it finds.
+The project workflow is committed at:
 
-## Resource-aware local operation
+`workflows/comfyui/storybook-ipadapter-sd15.json`
 
-The deterministic engine remains the default fallback, so OpenStory can run without an AI service. This is intentional for low-VRAM machines and offline development.
+It is an API-format workflow, not a UI export. It contains:
 
-For a 6 GB GPU, start with lightweight image workflows and avoid making high-resolution image generation a hard requirement for the core book pipeline.
+`CheckpointLoaderSimple → CLIP Text Encode → IPAdapter Plus → KSampler → VAEDecode → SaveImage`
 
-## Security
+and a reference branch:
 
-Provider endpoints should normally point to localhost or a trusted private network. Do not expose local AI APIs directly to the public internet without authentication and network controls.
+`LoadImage → CLIP Vision → IPAdapter Plus`
+
+### Required ComfyUI models/nodes
+
+Install a compatible SD 1.5 checkpoint, IPAdapter Plus custom nodes/models, and the matching CLIP Vision model. Names in the committed workflow are defaults and may be changed through workflow/model configuration when a local installation uses different filenames.
+
+The workflow expects:
+
+- SD 1.5 checkpoint: `v1-5-pruned-emaonly.safetensors`
+- IPAdapter Plus model: `ip-adapter-plus_sd15.bin`
+- CLIP Vision: `CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors`
+
+Place models in the directories expected by your ComfyUI installation/custom-node package. Do not commit model binaries to this repository.
+
+## OpenStory configuration
+
+Copy `.env.example` to your local environment and use:
+
+```text
+OPENSTORY_IMAGE_PROVIDER=comfyui
+COMFYUI_BASE_URL=http://localhost:8188
+COMFYUI_TIMEOUT_MS=300000
+COMFYUI_POLL_INTERVAL_MS=1000
+COMFYUI_WORKFLOW_PATH=./workflows/comfyui/storybook-ipadapter-sd15.json
+```
+
+`COMFYUI_WORKFLOW_PATH` has priority. The legacy `COMFYUI_WORKFLOW_JSON` remains supported as a fallback for existing installations.
+
+## How reference consistency works
+
+The generation pipeline is:
+
+`Story → Characters → Character Reference → Pages/Panels → ComfyUI → QA → Repair`
+
+When a character has no stored reference asset, OpenStory first generates a reference image with the same local ComfyUI provider. The reference asset is attached to the character and persisted in the canonical book.
+
+For each page/panel, OpenStory automatically:
+
+1. finds the Character IDs used by the panel;
+2. resolves their reference assets;
+3. uploads the reference image to `POST /upload/image`;
+4. injects the returned ComfyUI image name into the `LoadImage` node;
+5. injects prompt, negative prompt, seed and sampling controls into the workflow;
+6. submits `POST /prompt`;
+7. polls `GET /history/{prompt_id}`;
+8. records the generated image URL and asset ID.
+
+V1 sends the first reference when a panel has multiple characters. The provider contract already accepts a reference list so multi-reference workflow expansion can be added without changing the domain API.
+
+## Prompt and seed
+
+Every generated panel receives:
+
+- character description and appearance;
+- book visual style;
+- page/panel context;
+- negative prompt;
+- deterministic page/panel seed.
+
+The default negative prompt includes deformed anatomy, extra limbs/fingers, duplicate characters, text, watermark, blur, low quality and out-of-frame results.
+
+A page/panel seed is stored in the canonical model. Regenerating one panel does not change other panels' seeds.
+
+## Windows development
+
+From the repository root:
+
+```powershell
+corepack enable
+corepack prepare pnpm@10.15.1 --activate
+pnpm install
+pnpm --filter @openstory/web dev
+```
+
+Open:
+
+`http://localhost:3000/studio`
+
+ComfyUI must be running separately at `http://127.0.0.1:8188`.
+
+## Troubleshooting
+
+- **ComfyUI unavailable:** verify `http://127.0.0.1:8188/system_stats`.
+- **Workflow missing:** verify `COMFYUI_WORKFLOW_PATH` from the OpenStory working directory.
+- **Workflow invalid:** inspect the API-format JSON and ensure required custom nodes are installed.
+- **Model missing:** open the workflow in ComfyUI and verify checkpoint/IPAdapter/CLIP Vision filenames.
+- **Reference upload failed:** verify ComfyUI accepts `POST /upload/image` and that the reference URL/file is readable.
+- **Generation timeout:** increase `COMFYUI_TIMEOUT_MS`; do not remove polling.
+- **Output image missing:** inspect the ComfyUI history for the returned prompt ID and SaveImage output.
+
+Never put secrets or API keys in the repository.
