@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { createLLMProvider, createLLMProviderFromEnv, regeneratePanel, type LLMProviderSelection } from "@openstory/core";
+import { regeneratePanel, type LLMProviderSelection } from "@openstory/core";
+import { createLLMProvider, createLLMProviderFromEnv } from "@openstory/core/server";
 import { FileBookStore } from "@openstory/core/server";
 
 export const runtime = "nodejs";
