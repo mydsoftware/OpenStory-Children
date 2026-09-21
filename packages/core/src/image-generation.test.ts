@@ -17,7 +17,7 @@ describe("production image generation", () => {
     expect(result.generatedAssetIds).toHaveLength(2);
     expect(result.book.assets).toHaveLength(2);
     expect(result.book.pages.every(page => page.panels.every(panel => panel.assetIds.length === 1))).toBe(true);
-    expect(calls[0]?.prompt).toContain("دینو");
+    expect(calls[0]?.prompt).toContain("دینو");\n    expect(calls[0]?.references).toBeUndefined();\n    expect(calls[1]?.references?.length).toBeGreaterThan(0);
     expect(validateBook(result.book).ok).toBe(true);
   });
 
@@ -29,7 +29,7 @@ describe("production image generation", () => {
     };
     const result = await generateBookImages(book, provider);
     expect(result.generatedAssetIds).toEqual([]);
-    expect(result.failures).toHaveLength(2);
+    expect(result.failures).toHaveLength(1);
     expect(result.book.assets).toEqual([]);
   });
 });
