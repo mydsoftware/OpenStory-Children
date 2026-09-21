@@ -38,11 +38,11 @@ and a reference branch:
 
 Install the **ComfyUI_IPAdapter_plus** custom node and the following model files:
 
-- SD 1.5 checkpoint: `StorybookRedmond.safetensors` in `models/checkpoints/`
+- StorybookRedmond Diffusers model: `StorybookRedmond/` under `models/diffusers/`
 - IPAdapter Plus SD15: `ip-adapter-plus_sd15.safetensors` in `models/ipadapter/`
 - CLIP Vision ViT-H: `CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors` in `models/clip_vision/`
 
-The workflow now references these exact filenames. The IPAdapter Plus project documents `ip-adapter-plus_sd15.safetensors` as the SD15 Plus model and the ViT-H encoder as its matching image encoder. citeturn0search3turn0search4
+The workflow now loads `StorybookRedmond` through ComfyUI's Diffusers loader. The official model card exposes it as a Diffusers `StableDiffusionPipeline`, so it should not be treated as a conventional single-file checkpoint. The IPAdapter Plus project documents `ip-adapter-plus_sd15.safetensors` as the SD15 Plus model and the ViT-H encoder as its matching image encoder. citeturn0search3turn0search4
 
 Do not commit model binaries to this repository.
 
