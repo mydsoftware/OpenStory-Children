@@ -6,7 +6,7 @@ function setInput(node:{inputs?:Record<string,unknown>},key:string,value:unknown
 export function mutateComfyUIWorkflow(source:Record<string,unknown>,input:ComfyUIWorkflowInput):Record<string,unknown>{
  const workflow=cloneWorkflow(source); let checkpointNode:string|undefined; let ipNode:string|undefined; let samplerNode:string|undefined;
  for(const [id,node] of Object.entries(workflow)){const type=node.class_type??"";const values=node.inputs??{};
-  if(type==="CheckpointLoaderSimple"){checkpointNode=id;if(input.checkpoint)setInput(node,"ckpt_name",input.checkpoint);}
+  if(type==="CheckpointLoaderSimple"||type==="DiffusersLoader"){checkpointNode=id;if(input.checkpoint&&type==="CheckpointLoaderSimple")setInput(node,"ckpt_name",input.checkpoint);}
   if(type==="CLIPTextEncode"){const text=String(values.text??"");if(text.includes("{{NEGATIVE_PROMPT}}"))setInput(node,"text",input.negativePrompt);else if(text.includes("{{PROMPT}}")||text==="")setInput(node,"text",input.prompt);}
   if(type==="EmptyLatentImage"){setInput(node,"width",input.width);setInput(node,"height",input.height);setInput(node,"batch_size",1);}
   if(type==="KSampler"){samplerNode=id;setInput(node,"seed",input.seed);setInput(node,"steps",input.steps);setInput(node,"cfg",input.cfg);setInput(node,"sampler_name",input.sampler);setInput(node,"scheduler",input.scheduler);}
