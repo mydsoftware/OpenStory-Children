@@ -15,7 +15,7 @@ async function configuredProvider() {
   } catch { /* fall back to environment configuration */ }
   return createLLMProviderFromEnv();
 }
-function configuredImageProvider() { return createImageProviderFromEnv(); }
+async function configuredImageProvider() { return createImageProviderFromEnv(); }
 
 export async function GET() {
   return NextResponse.json({ books: await store.list() });
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   try {
     const input = StoryInputSchema.parse(await request.json());
     const llm = await configuredProvider();
-    const image = configuredImageProvider();
+    const image = await configuredImageProvider();
     const result = await new BookOrchestrator(store).create(input, { llm, image });
     return NextResponse.json({
       book: result.book,
