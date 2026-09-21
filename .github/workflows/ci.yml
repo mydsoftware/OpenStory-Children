@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 20
+          package-manager-cache: false
       - run: pnpm install --frozen-lockfile=false
       - run: pnpm check
       - run: pnpm --filter @openstory/web build
