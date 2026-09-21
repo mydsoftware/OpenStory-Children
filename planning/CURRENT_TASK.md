@@ -2,42 +2,48 @@
 
 ## Active Phase
 
-**Phase 11 — Web Product / V1 Core**
+**Phase 12 — Production Image Pipeline / Character Consistency**
 
 ## Objective
 
-Complete and verify the local-first executable comic-book studio vertical slice and release gate.
+Turn the existing ComfyUI adapter into a real SD 1.5 + IPAdapter Plus children's book image pipeline while preserving the provider-neutral architecture.
 
 ## Completed In This Loop
 
-- [x] Durable filesystem BookStore and persistent project API.
-- [x] Ollama structured-output adapter.
-- [x] LM Studio/OpenAI-compatible structured-output adapter.
-- [x] ComfyUI image adapter with polling and output mapping.
-- [x] Validated LLM story generation with deterministic fallback.
-- [x] Environment-driven and persistent local provider configuration.
-- [x] Provider health checks, retry policy and structured job errors.
-- [x] Studio provider controls and project library.
-- [x] Validated book PATCH API and Studio page/panel editing with explicit save.
-- [x] Scoped panel regeneration API and Studio action.
-- [x] Character reference/asset fields and consistency QA enforcement.
-- [x] Production image generation integrated into BookOrchestrator.
-- [x] Orchestrator tests covering success, image failure and deterministic fallback.
-- [x] CI run #112 green for commit 996899f9fbf774346c58575fff71ea2069463788.
+- [x] ComfyUI workflow can be loaded from `COMFYUI_WORKFLOW_PATH`.
+- [x] Legacy `COMFYUI_WORKFLOW_JSON` remains supported.
+- [x] Committed SD 1.5 API-format IPAdapter workflow.
+- [x] Dynamic prompt, negative prompt, seed, size, steps, CFG, sampler, scheduler, checkpoint and IPAdapter weight injection.
+- [x] Real ComfyUI reference upload through `POST /upload/image`.
+- [x] Character reference generation and persistent character reference asset mapping.
+- [x] Automatic page/panel character → reference resolution.
+- [x] Deterministic per-panel seeds.
+- [x] Image generation status/error metadata.
+- [x] Image failure repair pass before the job is failed.
+- [x] Continuity QA for generated images and reference mappings.
+- [x] Unit/integration-style tests for workflow mutation, reference upload/polling and character→page mapping.
+- [x] Windows/local AI documentation and environment template.
 
-## Remaining Release-Gate Tasks
+## Verification Gate
 
-- [ ] Add comprehensive API/provider failure integration coverage where the existing test harness supports it.
-- [ ] Run browser E2E/visual verification against /studio.
-- [ ] Repair every browser failure until verification is green.
-- [ ] Add contribution/release documentation.
-- [ ] Sync all release-status documentation after verification.
-- [ ] Only then mark V1.0 release-ready and tag the release.
+The implementation must pass:
+
+1. typecheck;
+2. unit/integration tests;
+3. production build;
+4. Browser E2E;
+5. CI.
+
+A real ComfyUI runtime test is optional for CI because tests use a mock HTTP provider; local runtime verification requires installed SD 1.5/IPAdapter/CLIP Vision models.
+
+## Next Concrete Tasks
+
+1. Run the full repository check in GitHub Actions.
+2. Repair every compile/test/build/browser failure.
+3. Verify the final workflow JSON and local AI docs against the implemented provider.
+4. Update release/status documentation after green verification.
+5. Continue toward V1 release only after the complete verification gate passes.
 
 ## Agentic Repair Rule
 
-After every implementation increment, run the available tests/build/browser checks. If any check fails, inspect the actual failure, make the smallest coherent fix, rerun the failed check, and continue the loop. Do not stop for user approval unless a destructive, security-sensitive, or fundamentally ambiguous product decision is unavoidable.
-
-## Acceptance Criteria
-
-The project must provide a usable local-first workflow in which a user can create a book, optionally use a local LLM, persist it, reopen it, inspect QA, edit pages/panels, regenerate a scoped panel, export it, and manage projects from the Studio. AI providers remain optional and vendor-neutral. No V1.0 claim is allowed until automated and browser verification have actually passed.
+After every implementation increment, run the available tests/build/browser checks. If any check fails, inspect the actual failure, make the smallest coherent fix, rerun the failed check, and continue without requesting routine approval.
