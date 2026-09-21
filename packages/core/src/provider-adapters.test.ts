@@ -18,7 +18,26 @@ describe("local provider adapters", () => {
     vi.unstubAllGlobals();
   });
 
-  it("uploads a reference and injects it into a ComfyUI workflow", async () => {\n    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {\n      const url = String(input);\n      if (url.endsWith("/ref.png")) return new Response(new Uint8Array([1,2,3]), { status: 200, headers: { "content-type": "image/png" } });\n      if (url.endsWith("/upload/image")) return new Response(JSON.stringify({ name: "reference.png", subfolder: "" }), { status: 200 });\n      if (url.endsWith("/prompt")) return new Response(JSON.stringify({ prompt_id: "p1" }), { status: 200 });\n      if (url.endsWith("/history/p1")) return new Response(JSON.stringify({ p1: { outputs: { "1": { images: [{ filename: "out.png", subfolder: "", type: "output" }] } } } }), { status: 200 });\n      throw new Error("unexpected URL " + url);\n    });\n    vi.stubGlobal("fetch", fetchMock);\n    const provider = new ComfyUIImageProvider({ baseUrl: "http://localhost:8188", workflow: { "1": { class_type: "CheckpointLoaderSimple", inputs: { ckpt_name: "base.safetensors" } }, "2": { class_type: "CLIPTextEncode", inputs: { text: "{{PROMPT}}" } }, "3": { class_type: "CLIPTextEncode", inputs: { text: "{{NEGATIVE_PROMPT}}" } }, "4": { class_type: "EmptyLatentImage", inputs: { width: 512, height: 512, batch_size: 1 } }, "5": { class_type: "LoadImage", inputs: { image: "old.png" } }, "6": { class_type: "KSampler", inputs: { model: ["1", 0], seed: 1, steps: 20, cfg: 7, sampler_name: "euler", scheduler: "normal" } } } });\n    const result = await provider.generate({ prompt: "dino", references: ["https://example.com/ref.png"], seed: 42 });\n    expect(result.url).toContain("out.png");\n    expect(fetchMock).toHaveBeenCalledWith("http://localhost:8188/upload/image", expect.objectContaining({ method: "POST" }));\n    const promptCall = fetchMock.mock.calls.find(call => String(call[0]).endsWith("/prompt"));\n    expect(String(promptCall?.[1]?.body)).toContain("reference.png");\n    vi.unstubAllGlobals();\n  });\n\n  it("requires a ComfyUI workflow", async () => {
+  it("uploads a reference and injects it into a ComfyUI workflow", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.endsWith("/ref.png")) return new Response(new Uint8Array([1,2,3]), { status: 200, headers: { "content-type": "image/png" } });
+      if (url.endsWith("/upload/image")) return new Response(JSON.stringify({ name: "reference.png", subfolder: "" }), { status: 200 });
+      if (url.endsWith("/prompt")) return new Response(JSON.stringify({ prompt_id: "p1" }), { status: 200 });
+      if (url.endsWith("/history/p1")) return new Response(JSON.stringify({ p1: { outputs: { "1": { images: [{ filename: "out.png", subfolder: "", type: "output" }] } } } }), { status: 200 });
+      throw new Error("unexpected URL " + url);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const provider = new ComfyUIImageProvider({ baseUrl: "http://localhost:8188", workflow: { "1": { class_type: "CheckpointLoaderSimple", inputs: { ckpt_name: "base.safetensors" } }, "2": { class_type: "CLIPTextEncode", inputs: { text: "{{PROMPT}}" } }, "3": { class_type: "CLIPTextEncode", inputs: { text: "{{NEGATIVE_PROMPT}}" } }, "4": { class_type: "EmptyLatentImage", inputs: { width: 512, height: 512, batch_size: 1 } }, "5": { class_type: "LoadImage", inputs: { image: "old.png" } }, "6": { class_type: "KSampler", inputs: { model: ["1", 0], seed: 1, steps: 20, cfg: 7, sampler_name: "euler", scheduler: "normal" } } } });
+    const result = await provider.generate({ prompt: "dino", references: ["https://example.com/ref.png"], seed: 42 });
+    expect(result.url).toContain("out.png");
+    expect(fetchMock).toHaveBeenCalledWith("http://localhost:8188/upload/image", expect.objectContaining({ method: "POST" }));
+    const promptCall = fetchMock.mock.calls.find(call => String(call[0]).endsWith("/prompt"));
+    expect(String(promptCall?.[1]?.body)).toContain("reference.png");
+    vi.unstubAllGlobals();
+  });
+
+  it("requires a ComfyUI workflow", async () => {
     const provider = new ComfyUIImageProvider({ baseUrl: "http://localhost:8188" });
     await expect(provider.generate({ prompt: "test" })).rejects.toThrow("workflow is required");
   });
