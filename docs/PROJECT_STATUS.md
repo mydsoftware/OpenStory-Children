@@ -17,7 +17,7 @@
 - ComfyUI provider with health check, retry, API workflow submission and history polling.
 - File-based ComfyUI workflow loading with legacy JSON environment fallback.
 - Real reference upload to ComfyUI `/upload/image`.
-- SD 1.5 + IPAdapter Plus workflow committed in `workflows/comfyui/storybook-ipadapter-sd15.json`.
+- SD 1.5 + IPAdapter Plus workflow committed in `workflows/comfyui/storybook-ipadapter-sd15.json`, aligned with StorybookRedmond + `ip-adapter-plus_sd15.safetensors` + ViT-H.
 - Automatic character reference generation and page/panel reference mapping.
 - Deterministic panel seeds and 512×512 low-VRAM defaults.
 - Image generation status/error state and one repair pass.
@@ -30,7 +30,7 @@
 
 ## Important Limitations
 
-- The committed workflow depends on ComfyUI IPAdapter Plus custom nodes and the specified SD 1.5/CLIP Vision model files; binaries are not committed.
+- The committed workflow depends on ComfyUI IPAdapter Plus custom nodes and the specified StorybookRedmond/CLIP Vision/IPAdapter model files; binaries are not committed.
 - V1 currently sends the first available character reference to the ComfyUI IPAdapter pipeline when a panel has multiple characters. The interface is ready for true multi-reference workflows.
 - Native server-side PDF generation is not included; browser print remains the PDF path.
 - Durable background job infrastructure is still a future scaling concern; local generation is request-scoped.
