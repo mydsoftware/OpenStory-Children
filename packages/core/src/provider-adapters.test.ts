@@ -19,7 +19,7 @@ describe("local provider adapters", () => {
   });
 
   it("uploads a reference and injects it into a ComfyUI workflow", async () => {
-    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       if (url.endsWith("/ref.png")) return new Response(new Uint8Array([1,2,3]), { status: 200, headers: { "content-type": "image/png" } });
       if (url.endsWith("/upload/image")) return new Response(JSON.stringify({ name: "reference.png", subfolder: "" }), { status: 200 });
