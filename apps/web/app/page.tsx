@@ -17,6 +17,13 @@ type ApiResult = {
   error?: string;
 };
 
+const ages = [
+  { value: "2-3", label: "۲ تا ۳ سال", icon: "🧸" },
+  { value: "4-5", label: "۴ تا ۵ سال", icon: "🌈" },
+  { value: "6-8", label: "۶ تا ۸ سال", icon: "🚀" },
+  { value: "9-12", label: "۹ تا ۱۲ سال", icon: "🗺️" }
+] as const;
+
 export default function Home() {
   const [idea, setIdea] = useState(examples[0]);
   const [ageBand, setAgeBand] = useState<"2-3"|"4-5"|"6-8"|"9-12">("4-5");
@@ -28,111 +35,93 @@ export default function Home() {
 
   async function generate() {
     if (!idea.trim()) { setError("ایده داستان را وارد کنید."); return; }
-
-    setLoading(true);
-    setError("");
-    setBook(null);
+    setLoading(true); setError(""); setBook(null);
     setStatus("در حال ساخت داستان و تصویرهای کتاب...");
-
     try {
       const response = await fetch("/api/books", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ idea: idea.trim(), ageBand, language: "fa", pageCount })
       });
-
       const data = (await response.json()) as ApiResult;
-      if (!response.ok || !data.book) {
-        throw new Error(data.error ?? data.job?.error?.message ?? "ساخت کتاب ناموفق بود.");
-      }
-
+      if (!response.ok || !data.book) throw new Error(data.error ?? data.job?.error?.message ?? "ساخت کتاب ناموفق بود.");
       setBook(data.book);
       setStatus("کتاب با موفقیت ساخته شد.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "خطای ناشناخته در ساخت کتاب.");
       setStatus("");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }
 
   return (
-    <main className="shell">
-      <header className="hero">
-        <div className="eyebrow">OPEN SOURCE • AI STORY ENGINE</div>
-        <h1>OpenStory Children</h1>
-        <p>ایده‌ی کودک را به یک کتاب کمیک واقعی تبدیل کن؛ داستان با مدل محلی و تصویرها با ComfyUI تولید می‌شوند.</p>
-      </header>
+    <main className="app-shell">
+      <div className="sky-glow glow-one" />
+      <div className="sky-glow glow-two" />
 
-      <div className="grid">
-        <section className="card">
-          <h2>ساخت کتاب</h2>
+      <nav className="topbar">
+        <div className="brand"><span className="brand-mark">✦</span><span>OpenStory</span><b>Kids</b></div>
+        <div className="topbar-badge">داستان‌ساز هوش مصنوعی</div>
+      </nav>
 
-          <label htmlFor="idea">ایده داستان</label>
-          <textarea id="idea" value={idea} onChange={e => setIdea(e.target.value)} />
+      <section className="hero">
+        <div className="hero-copy">
+          <div className="eyebrow"><span>✨</span> قصه‌ای که از یک ایده شروع می‌شود</div>
+          <h1>داستان خودت را<br /><em>بساز و ببین!</em></h1>
+          <p>ایده‌ی کودک را به یک کتاب تصویری دوست‌داشتنی تبدیل کن؛ با داستان، شخصیت‌های ثابت و تصویرسازی هوش مصنوعی.</p>
+          <div className="hero-pills"><span>🎨 تصویرسازی با AI</span><span>📖 کتاب چندصفحه‌ای</span><span>🧒 مناسب کودک</span></div>
+        </div>
+        <div className="hero-art" aria-hidden="true">
+          <div className="sun">☀️</div><div className="cloud cloud-a">☁️</div><div className="cloud cloud-b">☁️</div>
+          <div className="rainbow">🌈</div><div className="hero-dino">🦖</div><div className="hero-star star-a">✦</div><div className="hero-star star-b">✦</div>
+        </div>
+      </section>
 
-          <label htmlFor="age">گروه سنی</label>
-          <select id="age" value={ageBand} onChange={e => setAgeBand(e.target.value as typeof ageBand)}>
-            <option value="2-3">۲ تا ۳ سال</option>
-            <option value="4-5">۴ تا ۵ سال</option>
-            <option value="6-8">۶ تا ۸ سال</option>
-            <option value="9-12">۹ تا ۱۲ سال</option>
-          </select>
+      <div className="workspace">
+        <aside className="creator-card">
+          <div className="section-title"><span className="step">۱</span><div><strong>قصه‌ات را تعریف کن</strong><small>هر چیزی که دوست داری بنویس</small></div></div>
+          <textarea className="idea-box" aria-label="ایده داستان" value={idea} onChange={e => setIdea(e.target.value)} />
+          <button className="sample-link" disabled={loading} onClick={() => setIdea(examples[Math.floor(Math.random() * examples.length)])}>🎲 یک ایده تصادفی</button>
 
-          <label htmlFor="pages">تعداد صفحات: {pageCount}</label>
-          <input id="pages" type="range" min="1" max="12" value={pageCount} onChange={e => setPageCount(Number(e.target.value))} />
-
-          <div className="actions">
-            <button onClick={generate} disabled={loading}>
-              {loading ? "در حال تولید..." : "ساخت کتاب"}
-            </button>
-            <button className="secondary" disabled={loading} onClick={() => setIdea(examples[Math.floor(Math.random() * examples.length)])}>
-              ایده نمونه
-            </button>
+          <div className="section-title compact"><span className="step">۲</span><div><strong>سن کودک</strong><small>داستان متناسب با سن ساخته می‌شود</small></div></div>
+          <div className="age-grid">
+            {ages.map(age => <button key={age.value} className={ageBand === age.value ? "age-card active" : "age-card"} onClick={() => setAgeBand(age.value)} disabled={loading}><span>{age.icon}</span><b>{age.label}</b></button>)}
           </div>
 
-          {status && <div className="status">{status}</div>}
-          {error && <div className="error">{error}</div>}
-        </section>
+          <div className="section-title compact"><span className="step">۳</span><div><strong>تعداد صفحات</strong><small>{pageCount} صفحه کتاب تصویری</small></div></div>
+          <div className="range-row"><span>۱</span><input type="range" min="1" max="12" value={pageCount} onChange={e => setPageCount(Number(e.target.value))} /><span>۱۲</span></div>
 
-        <section className="card">
+          <button className="create-button" onClick={generate} disabled={loading}><span>{loading ? "⏳" : "✨"}</span>{loading ? "در حال ساخت کتاب..." : "ساخت کتاب من"}</button>
+          {status && <div className="status success">✓ {status}</div>}
+          {error && <div className="status error">⚠ {error}</div>}
+        </aside>
+
+        <section className="book-stage">
           {!book ? (
-            <div className="empty">{loading ? "لطفاً منتظر بمانید؛ تولید تصویر ممکن است زمان ببرد." : "برای شروع، یک ایده وارد کنید."}</div>
+            <div className="empty-stage">
+              <div className="empty-illustration"><div className="empty-book">📖</div><span>✦</span><span>✧</span></div>
+              <h2>{loading ? "جادو در حال اتفاق افتادن است..." : "اینجا کتابت ساخته می‌شود"}</h2>
+              <p>{loading ? "داستان و تصویرها در حال تولید هستند؛ کمی صبر کن." : "ایده‌ات را بنویس و دکمه «ساخت کتاب من» را بزن."}</p>
+              {!loading && <div className="hint-row"><span>📝 ایده</span><b>→</b><span>🤖 داستان</span><b>→</b><span>🎨 تصویر</span><b>→</b><span>📖 کتاب</span></div>}
+            </div>
           ) : (
-            <>
-              <h2 className="book-title">{book.title}</h2>
-              <div className="meta">{book.ageBand} • {book.pages.length} صفحه • فارسی</div>
-
-              {book.pages.map(page => (
-                <article className="page" key={page.id}>
-                  <div className="page-head">صفحه {page.pageNumber} — {page.title}</div>
-
-                  {page.generatedImage ? (
-                    <img
-                      className="generated-image"
-                      src={page.generatedImage}
-                      alt={page.title}
-                    />
-                  ) : (
-                    <div className="empty">تصویر این صفحه تولید نشده است.</div>
-                  )}
-
-                  <div className="story-text">
-                    {page.panels.map(panel => (
-                      <div className="panel-text" key={panel.id}>
-                        <div>{panel.narration}</div>
-                        {panel.dialogue.map((dialogue, index) => (
-                          <div className="bubble" key={index}>{dialogue}</div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </>
+            <div className="book-result">
+              <div className="result-head"><div><span className="result-label">کتاب جدید شما</span><h2>{book.title}</h2><p>{book.ageBand} سال • {book.pages.length} صفحه • فارسی</p></div><div className="result-badge">✓ آماده است</div></div>
+              <div className="book-cover"><div className="cover-art">🌈<span>🦖</span><i>✦</i></div><div><small>کتاب تصویری کودک</small><h3>{book.title}</h3><p>ساخته‌شده با OpenStory AI</p></div></div>
+              <div className="pages-grid">
+                {book.pages.map(page => (
+                  <article className="story-page" key={page.id}>
+                    <div className="page-number">صفحه {page.pageNumber}</div>
+                    <div className="image-frame">{page.generatedImage ? <img src={page.generatedImage} alt={page.title} /> : <div className="image-placeholder">🎨<span>تصویر این صفحه هنوز تولید نشده</span></div>}</div>
+                    <div className="page-copy"><h3>{page.title}</h3>{page.panels.map(panel => <div key={panel.id} className="panel-copy"><p>{panel.narration}</p>{panel.dialogue.map((dialogue, index) => <div className="speech" key={index}>“{dialogue}”</div>)}</div>)}</div>
+                  </article>
+                ))}
+              </div>
+            </div>
           )}
         </section>
       </div>
+
+      <footer><span>OpenStory Children</span><span>ساخت کتاب داستان با هوش مصنوعی و مدل‌های محلی</span></footer>
     </main>
   );
 }
