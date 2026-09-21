@@ -36,15 +36,30 @@ and a reference branch:
 
 ### Required ComfyUI models/nodes
 
-Install a compatible SD 1.5 checkpoint, IPAdapter Plus custom nodes/models, and the matching CLIP Vision model. Names in the committed workflow are defaults and may be changed through workflow/model configuration when a local installation uses different filenames.
+Install the **ComfyUI_IPAdapter_plus** custom node and the following model files:
 
-The workflow expects:
+- SD 1.5 checkpoint: `StorybookRedmond.safetensors` in `models/checkpoints/`
+- IPAdapter Plus SD15: `ip-adapter-plus_sd15.safetensors` in `models/ipadapter/`
+- CLIP Vision ViT-H: `CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors` in `models/clip_vision/`
 
-- SD 1.5 checkpoint: `v1-5-pruned-emaonly.safetensors`
-- IPAdapter Plus model: `ip-adapter-plus_sd15.bin`
-- CLIP Vision: `CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors`
+The workflow now references these exact filenames. The IPAdapter Plus project documents `ip-adapter-plus_sd15.safetensors` as the SD15 Plus model and the ViT-H encoder as its matching image encoder. citeturn0search3turn0search4
 
-Place models in the directories expected by your ComfyUI installation/custom-node package. Do not commit model binaries to this repository.
+Do not commit model binaries to this repository.
+
+Expected local layout:
+
+```text
+D:\AI\ComfyUI\
+├── models\
+│   ├── checkpoints\
+│   │   └── StorybookRedmond.safetensors
+│   ├── clip_vision\
+│   │   └── CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors
+│   └── ipadapter\
+│       └── ip-adapter-plus_sd15.safetensors
+└── custom_nodes\
+    └── ComfyUI_IPAdapter_plus\
+```
 
 ## OpenStory configuration
 
