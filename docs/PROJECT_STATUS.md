@@ -4,7 +4,7 @@
 
 - **Phase:** 12 — Production Image Pipeline / Character Consistency
 - **Milestone:** Local-first executable children's comic studio
-- **Status:** IN_PROGRESS
+- **Status:** IN_PROGRESS — implementation gates green
 - **Last repository review:** 2026-09-21
 
 ## Verified Implemented
@@ -47,4 +47,4 @@ Browser E2E is required before release. CI should be the authoritative verificat
 
 ## Next Concrete Task
 
-Run CI and Browser E2E on the new production image pipeline, repair failures, then synchronize release documentation. Do not tag V1 until all gates are green.
+CI run #173 and Browser E2E run #56 are green for the production image pipeline. Remaining release limitations are real ComfyUI runtime smoke testing and visual verification with agent-browser; do not tag V1 until those gates are actually verified.
