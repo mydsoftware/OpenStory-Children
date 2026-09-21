@@ -2,29 +2,20 @@ export interface ProviderMetadata { id: string; name: string; model?: string; lo
 export interface ProviderHealth { healthy: boolean; status: "online" | "offline" | "degraded" | "fallback" | "unknown"; latencyMs?: number; error?: string; checkedAt: string; }
 export interface HealthCheckable { health(): Promise<ProviderHealth>; }
 export interface LLMProvider { metadata: ProviderMetadata; generateStructured<T>(input: { prompt: string; schema: unknown }): Promise<T>; }
-export interface ImageProvider { metadata: ProviderMetadata; generate(input: { prompt: string; references?: string[] }): Promise<{ assetId: string; url: string }>; }
+export interface ImageProvider {
+  metadata: ProviderMetadata;
+  generate(input: {
+    prompt: string; references?: string[]; negativePrompt?: string; seed?: number; width?: number; height?: number;
+    steps?: number; cfg?: number; sampler?: string; scheduler?: string; checkpoint?: string; ipAdapterWeight?: number;
+  }): Promise<{ assetId: string; url: string }>;
+}
 export interface ProviderRegistry { llm?: LLMProvider; image?: ImageProvider; }
-
 export interface OllamaConfig { kind: "ollama"; baseUrl: string; model: string; timeoutMs?: number; }
 export interface OpenAICompatibleConfig { kind: "openai-compatible"; baseUrl: string; model: string; timeoutMs?: number; apiKey?: string; }
-export interface ComfyUIConfig { kind: "comfyui"; baseUrl: string; timeoutMs?: number; pollIntervalMs?: number; workflow?: Record<string, unknown>; }
-
+export interface ComfyUIConfig { kind: "comfyui"; baseUrl: string; timeoutMs?: number; pollIntervalMs?: number; workflow?: Record<string, unknown>; workflowPath?: string; retry?: Partial<RetryPolicy>; }
 export interface RetryPolicy { attempts: number; delayMs: number; backoff: number; }
 export const DEFAULT_RETRY_POLICY: RetryPolicy = { attempts: 3, delayMs: 300, backoff: 2 };
-
-export class DeterministicLLMProvider implements LLMProvider {
-  metadata = { id: "deterministic", name: "Deterministic fallback", local: true };
-  async generateStructured<T>(): Promise<T> { throw new Error("No LLM configured. Use the deterministic story engine or configure an LLM provider."); }
-}
-
-export function createOllamaConfig(baseUrl = "http://localhost:11434", model = "qwen2.5:7b"): OllamaConfig {
-  return { kind: "ollama", baseUrl: baseUrl.replace(/\/$/, ""), model };
-}
-
-export function createOpenAICompatibleConfig(baseUrl = "http://localhost:1234/v1", model = "local-model"): OpenAICompatibleConfig {
-  return { kind: "openai-compatible", baseUrl: baseUrl.replace(/\/$/, ""), model };
-}
-
-export function createComfyUIConfig(baseUrl = "http://localhost:8188"): ComfyUIConfig {
-  return { kind: "comfyui", baseUrl: baseUrl.replace(/\/$/, "") };
-}
+export class DeterministicLLMProvider implements LLMProvider { metadata = { id: "deterministic", name: "Deterministic fallback", local: true }; async generateStructured<T>(): Promise<T> { throw new Error("No LLM configured. Use the deterministic story engine or configure an LLM provider."); } }
+export function createOllamaConfig(baseUrl = "http://localhost:11434", model = "qwen2.5:7b"): OllamaConfig { return { kind: "ollama", baseUrl: baseUrl.replace(/\/$/, ""), model }; }
+export function createOpenAICompatibleConfig(baseUrl = "http://localhost:1234/v1", model = "local-model"): OpenAICompatibleConfig { return { kind: "openai-compatible", baseUrl: baseUrl.replace(/\/$/, ""), model }; }
+export function createComfyUIConfig(baseUrl = "http://localhost:8188"): ComfyUIConfig { return { kind: "comfyui", baseUrl: baseUrl.replace(/\/$/, "") }; }
