@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { createLLMProvider } from "@openstory/core";
+import { createLLMProvider } from "@openstory/core/server";
 
 type ProviderKind = "none" | "ollama" | "lmstudio";
 type ProviderConfig = { provider: ProviderKind; baseUrl: string; model: string };
