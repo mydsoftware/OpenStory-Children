@@ -16,7 +16,7 @@ export class BookOrchestrator{
   const job:GenerationJob={id:"job-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),status:"running",stage:"generation",input};
   try{const result=await generateWithFallback(input,providers.llm);job.usedFallback=result.usedFallback;let book=result.book;
    if(providers.image){job.stage="image";let generated=await generateBookImages(book,providers.image);book=generated.book;
-    if(generated.failures.length){const repaired=await repairFailedBookImages(book,providers.image,1);book=repaired.book;generated={...generated,failures:repaired.failures.length?generated.failures.concat(repaired.failures):[],book};}
+    if(generated.failures.length){const repaired=await repairFailedBookImages(book,providers.image,book.pages.length);book=repaired.book;generated={...generated,failures:repaired.failures,book};}
     if(generated.failures.length){job.status="failed";job.error=toJobError(new Error(generated.failures.join("; ")),"image",providers.image.metadata.id);throw new Error(job.error.message);}
    }
    job.stage="qa";let qa=validateBook(book);if(!qa.ok){book=repairBook(book);qa=validateBook(book);}job.qa=qa;
