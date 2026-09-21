@@ -36,13 +36,17 @@ The implementation must pass:
 
 A real ComfyUI runtime test is optional for CI because tests use a mock HTTP provider; local runtime verification requires installed SD 1.5/IPAdapter/CLIP Vision models.
 
+## Verification Completed
+
+- [x] CI run #173 green: typecheck, tests, recursive build, web build.
+- [x] Browser E2E run #56 green: Chromium Studio generation/edit/regeneration coverage.
+- [x] Final workflow JSON and local AI docs synchronized with the implementation.
+
 ## Next Concrete Tasks
 
-1. Run the full repository check in GitHub Actions.
-2. Repair every compile/test/build/browser failure.
-3. Verify the final workflow JSON and local AI docs against the implemented provider.
-4. Update release/status documentation after green verification.
-5. Continue toward V1 release only after the complete verification gate passes.
+1. Perform a real local ComfyUI runtime smoke test with SD 1.5 + IPAdapter Plus + CLIP Vision installed.
+2. Perform visual verification with an available browser automation runtime when available.
+3. Continue toward V1 release only after the complete verification gate passes.
 
 ## Agentic Repair Rule
 
