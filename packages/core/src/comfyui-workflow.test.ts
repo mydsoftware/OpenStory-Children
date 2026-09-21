@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mutateComfyUIWorkflow } from "./comfyui-workflow.js";
 import { generateStoryBook, generateBookImages, type ImageProvider } from "./index.js";
 
-const workflow={"1":{class_type:"CheckpointLoaderSimple",inputs:{ckpt_name:"base.safetensors"}},"2":{class_type:"CLIPTextEncode",inputs:{text:"{{PROMPT}}"}},"3":{class_type:"CLIPTextEncode",inputs:{text:"{{NEGATIVE_PROMPT}}"}},"4":{class_type:"EmptyLatentImage",inputs:{width:512,height:512,batch_size:1}},"5":{class_type:"LoadImage",inputs:{image:"old.png"}},"6":{class_type:"IPAdapterApply",inputs:{model:["1",0],weight:.75}},"7":{class_type:"KSampler",inputs:{model:["6",0],seed:1,steps:20,cfg:7,sampler_name:"euler",scheduler:"normal"}}};
+const workflow={"1":{class_type:"CheckpointLoaderSimple",inputs:{ckpt_name:"StorybookRedmond.safetensors"}},"2":{class_type:"CLIPTextEncode",inputs:{text:"{{PROMPT}}"}},"3":{class_type:"CLIPTextEncode",inputs:{text:"{{NEGATIVE_PROMPT}}"}}, "4":{class_type:"EmptyLatentImage",inputs:{width:512,height:512,batch_size:1}},"5":{class_type:"LoadImage",inputs:{image:"old.png"}},"6":{class_type:"IPAdapterApply",inputs:{model:["1",0],weight:.75}},"7":{class_type:"KSampler",inputs:{model:["6",0],seed:1,steps:20,cfg:7,sampler_name:"euler",scheduler:"normal"}}};
 
 describe("ComfyUI visual workflow",()=>{
  it("mutates prompt, generation controls and reference image",()=>{
